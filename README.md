@@ -9,7 +9,7 @@ A high-performance, asynchronous SSH brute-forcing tool written in Python. Lever
 - **Asynchronous Execution:** Built on `asyncio` and `asyncssh`.
 - **Configurable Concurrency:** Limit the number of simultaneous SSH connections with Semaphore.
 - **Wordlist Support:** Accepts separate user and password lists.
-- **Result Aggregation:** Collects and displays all successful login combinations.
+- **Result Summary:** Collects and displays all successful login combinations.
 
 ---
 
