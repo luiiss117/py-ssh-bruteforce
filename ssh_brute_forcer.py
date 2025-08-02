@@ -7,13 +7,11 @@ parser.add_argument("-t", "--tasks", type=int, default=3, help = "Maximum number
 parser.add_argument("-u", "--user-list", required=True, help = "User list.")
 parser.add_argument("-p", "--password-list", required=True, help = "Password list.")
 parser.add_argument("-P", "--port", type=int, default=22, help = "Alternative SSH port.")
-parser.add_argument("--stop-on-success", action='store_true', help = "The program will stop if a valid credential is found.")
+parser.add_argument("--stop-on-success", action='store_true', help = "Stop if a valid credential combination is found.")
 args = parser.parse_args()
 
-# List to collect all correct credentials
 successful_logins = []
 
-# IP Validation
 try:
     ip = ipaddress.IPv4Address(args.ip)
 except ipaddress.AddressValueError:
@@ -23,7 +21,6 @@ except ipaddress.AddressValueError:
 class TerminateTaskGroup(Exception):
     """Exception raised to terminate a task group."""
 
-# Coroutine to read the wordlists
 async def reading_wordlists():
     with open(args.user_list, "r") as u:
         users = [line.strip() for line in u if line.strip()]
@@ -31,7 +28,6 @@ async def reading_wordlists():
         passwords = [line.strip() for line in p if line.strip()]          
     return users, passwords    
 
-# Connect to the SSH server
 async def brute_force(semaphore, usr, passw):
     async with semaphore: 
         try:
@@ -51,10 +47,10 @@ async def brute_force(semaphore, usr, passw):
                 
 
 async def main():
-    semaphore = asyncio.Semaphore(args.tasks) # Define maximum tasks
-    users, passwords = await reading_wordlists() # Use "users" and "passwords" from the reding_wordlists() coroutine
+    semaphore = asyncio.Semaphore(args.tasks) 
+    users, passwords = await reading_wordlists()
     try:
-        async with asyncio.TaskGroup() as tg: # Creating a task group
+        async with asyncio.TaskGroup() as tg:
             for u in users:
                 for p in passwords:      
                     tg.create_task(brute_force(semaphore, u, p))                       
@@ -73,5 +69,6 @@ if __name__ ==  '__main__':
     finally:
         end = time.time()
         duration = end - start   
-        print(f"All done in {duration:.2f} seconds!")     
+        print(f"All done in {duration:.2f} seconds!")      
+   
 
