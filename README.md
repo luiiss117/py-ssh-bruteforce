@@ -10,6 +10,7 @@ A high-performance, asynchronous SSH brute-forcing tool written in Python. Lever
 - **Configurable Concurrency:** Limit the number of simultaneous SSH connections with Semaphore.
 - **Wordlist Support:** Accepts separate user and password lists.
 - **Result Summary:** Collects and displays all successful login combinations.
+- **Stop On Success Option:** If set, the program will stop brute forcing when a valid credential combination is found
 
 ---
 
