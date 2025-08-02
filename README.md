@@ -44,17 +44,18 @@ options:
 ## 🌟 Example
 
 ```bash
-python3 ssh_brute_forcer.py -i 127.0.0.1 -u users.txt -p passwords.txt -t 2
-[+] Succesful login: ernesto:hola123
-[-] Incorrect login: hidalgo:hola123
-[-] Incorrect login: ernesto:Contraseña1234
-[-] Incorrect login: arthur:hola123
+python3 ssh_brute_forcer.py -i 127.0.0.1 -u users.txt -p passwords.txt -t 4 --stop-on-success
 [-] Incorrect login: hidalgo:Contraseña1234
-[+] Succesful login: jose:hola123
+[-] Incorrect login: hidalgo:hola123
+[-] Incorrect login: hidalgo:adios9999
+[-] Incorrect login: arthur:adios9999
+[-] Incorrect login: arthur:hola123
 [-] Incorrect login: arthur:Contraseña1234
-[-] Incorrect login: jose:Contraseña1234
+[+] Succesful login: ernest:hola123
+Exiting...
 [+] Correct logins:
-ernesto:hola123
-jose:hola123
+ernest:hola123
+All done in 5.73 seconds!
+Valid credentials found!
 ```
 
