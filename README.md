@@ -1,6 +1,6 @@
 ## 🚀 Asynchronous SSH Brute Forcer
 
-A high-performance, asynchronous SSH brute-forcing tool written in Python. Leveraging `asyncio` and `asyncssh`, this script attempts multiple username/password combinations concurrently..
+A high-performance, asynchronous SSH brute-forcing tool written in Python. Leveraging `asyncio` and `asyncssh`, this script attempts multiple username/password combinations concurrently.
 
 ---
 
@@ -10,7 +10,7 @@ A high-performance, asynchronous SSH brute-forcing tool written in Python. Lever
 - **Configurable Concurrency:** Limit the number of simultaneous SSH connections with Semaphore.
 - **Wordlist Support:** Accepts separate user and password lists.
 - **Result Summary:** Collects and displays all successful login combinations.
-- **Stop On Success Option:** If set, the program will stop brute forcing when a valid credential combination is found
+- **Stop On Success Option:** If set, the program will stop brute forcing when a valid credential combination is found.
 
 ---
 
@@ -19,7 +19,9 @@ A high-performance, asynchronous SSH brute-forcing tool written in Python. Lever
 - Python 3.11+
 - `asyncssh` library
 
+## 📥 Installation
 ```bash
+git clone https://github.com/luiiss117/py-ssh-bruteforcer
 pip install asyncssh
 ````
 
