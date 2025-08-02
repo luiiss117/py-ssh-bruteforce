@@ -28,7 +28,7 @@ pip install asyncssh
 ## 📚 Usage
 
 ```
-usage: ssh_brute_forcer.py [-h] -i IP [-t TASKS] -u USER_LIST -p PASSWORD_LIST [-P PORT]
+usage: ssh_brute_forcer.py [-h] -i IP [-t TASKS] -u USER_LIST -p PASSWORD_LIST [-P PORT] [--stop-on-success]
 
 options:
   -h, --help            show this help message and exit
@@ -40,6 +40,7 @@ options:
   -p PASSWORD_LIST, --password-list PASSWORD_LIST
                         Password list.
   -P PORT, --port PORT  Alternative SSH port.
+  --stop-on-success     Stop if a valid credential combination is found.
 ```
 
 ## 🌟 Example
